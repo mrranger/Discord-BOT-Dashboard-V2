@@ -1,8 +1,8 @@
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder } = require('discord.js');
 const prefix = require('../config/config.json');
 
 module.exports.details = {
-    name: 'Ban',
+    name: 'ban',
     author: 'LachlanDev#8014',
     icon: 'https://cdn.discordapp.com/avatars/365350852967399454/ce6e6e91fa887aa86e23ef356c9878fe',
     description: 'Bans a user from the server.',
@@ -13,12 +13,12 @@ module.exports.execute = async (client, message, args) => {
     const { member, mentions } = message;
     const tag = `<@${member.id}>`;
 
-    // Проверяем, есть ли у бота разрешения
+    // Check if the bot has permissions
     if (!message.guild.me || !message.guild.me.permissions.has('BAN_MEMBERS')) {
         return message.channel.send(`${tag} Sorry, I don't have permission to ban users!`);
     }
 
-    // Проверяем, есть ли у пользователя разрешения
+    // Check if the user has permissions
     if (!member.permissions.has('ADMINISTRATOR') && !member.permissions.has('BAN_MEMBERS')) {
         return message.channel.send(`${tag} You don't have permission.`);
     }

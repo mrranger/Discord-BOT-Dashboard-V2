@@ -12,7 +12,7 @@ module.exports.details = {
 
 module.exports.execute = (client, message, args) => {
   const result = throwdice();
-  
+
   const embed = new EmbedBuilder()
     .setColor('#b434eb')
     .setTitle('Dice Roll Result')

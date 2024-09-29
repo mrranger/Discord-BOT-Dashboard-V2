@@ -1,21 +1,25 @@
 module.exports = (client, message) => {
-    // Ignore all bots
-    if (message.author.bot) return;
-  
-    // Ignore messages not starting with the prefix (in config.json)
-    if (message.content.indexOf(client.config.prefix) !== 0) return;
-  
-    // Our standard argument/command name definition.
-    const args = message.content.slice(client.config.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-  
-    // Grab the command data from the client.commands Enmap
-    const cmd = client.commands.get(command);
-  
-    // If that command doesn't exist, silently exit and do nothing
-    if (!cmd) return;
-    if (message.content == client.config.prefix+'index') return;
-  
-    // Run the command
-    cmd.run(client, message, args);
-  };
+  // Ignore all messages from bots
+  if (message.author.bot) return;
+
+  // Ignore messages that do not start with the prefix (from config.json)
+  if (!message.content.startsWith(client.config.prefix)) return;
+
+  // Define the standard arguments and command name
+  const args = message.content.slice(client.config.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+
+  // Get command data from client.commands Enmap
+  const cmd = client.commands.get(command);
+
+  // If the command does not exist, exit
+  if (!cmd) return;
+
+  // Execute the command
+  try {
+    cmd.execute(client, message, args);
+  } catch (error) {
+    console.error(`Error executing command: ${error}`);
+    message.reply('There was an error trying to execute that command!');
+  }
+};

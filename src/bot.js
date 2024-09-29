@@ -1,8 +1,8 @@
 const Discord = require("discord.js");
 const Enmap = require("enmap");
-const fs = require("fs");
+const fs = require("fs").promises; // Using Promises for Asynchrony
 const chalk = require('chalk');
-const commands = require('./commands/index');
+const loadCommands = require('./commands/index'); // Import the command loading function
 
 const { GatewayIntentBits } = require('discord.js');
 
@@ -35,39 +35,23 @@ const settings = require('./config/settings.json');
 client.commands = new Enmap();
 client.config = config;
 
-// Loading events
-fs.readdir("./events/", (err, files) => {
-  if (err) return console.error(err);
-  files.forEach(file => {
+// Asynchronous function for loading events
+async function loadEvents() {
+  const files = await fs.readdir("./events/");
+  for (const file of files) {
     const event = require(`./events/${file}`);
-    let eventName = file.split(".")[0];
+    const eventName = file.split(".")[0];
     client.on(eventName, event.bind(null, client));
-  });
-});
-
-// Loading commands
-Object.keys(commands).forEach(commandName => {
-  let props = commands[commandName];
-  if (settings.includes(commandName)) return;
-  console.log(chalk.green(`[+] Loaded command: ${commandName}`));
-  console.log(`Loading command from ${__filename}`);
-
-
-  try {
-      client.commands.set(commandName, props);
-  } catch (error) {
-      console.error(`Error loading command ${commandName}: ${error}`);
+    console.log(chalk.green(`[+] Loaded event: ${eventName}`));
   }
-});
+}
 
-// Command processing
-client.on('messageCreate', message => {
-  if (message.author.bot) return; // Ignore the bots
-  if (!message.content.startsWith(config.prefix)) return; // Prefix check
+// Asynchronous function for loading events
+async function handleCommand(message) {
+  if (message.author.bot || !message.content.startsWith(config.prefix)) return;
 
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
   const commandName = args.shift().toLowerCase();
-
   const command = client.commands.get(commandName);
 
   if (!command) {
@@ -75,26 +59,32 @@ client.on('messageCreate', message => {
     return;
   }
 
-  // Checking for the presence of the execute function
-  if (typeof command.execute !== 'function') {
-    console.error(`Command ${commandName} does not have an execute function`);
-    return;
-  }
-
   try {
-    // Pass the client, message and arguments
-    command.execute(client, message, args);
+    await command.execute(client, message, args);
   } catch (error) {
     console.error(`Error executing command: ${error}`);
     message.reply('There was an error trying to execute that command!');
   }
+}
+
+// Use a function to handle messages
+client.on('messageCreate', handleCommand);
+
+// Initialize loading of commands and events
+(async () => {
+  await loadCommands(client); // Pass the client to the command loading function
+  await loadEvents(); // Loading events
+  await client.login(config.token); // Discord client login
+})();
+
+// Error handling
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
 });
 
-// Когда бот готов
-client.on("ready", () => {
-  client.user.setActivity('Set Activity', { type: 'WATCHING' });
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-client.login(config.token);
 
-exports.client = client;
+module.exports.client = client; // Exporting the client

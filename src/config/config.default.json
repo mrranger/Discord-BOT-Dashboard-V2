@@ -1,9 +1,9 @@
 {
     "clientID":"BOTclientID",
     "clientSecret":"BOTclientSecret",
-    "callbackURL":"http://localhost:1337/login/api",
+    "callbackURL":"http://localhost:3000/login/api",
     "Admin":["userAdminID"],
     "token":"BOTtoken",
     "prefix":"-",
-    "port":"1337"
+    "port":"3000"
 }

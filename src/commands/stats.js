@@ -5,7 +5,7 @@ require("moment-duration-format");
 const dateformat = require('dateformat');
 
 module.exports.details = {
-    name: 'Stats',
+    name: 'stats',
     author: 'LachlanDev#8014',
     icon: 'https://cdn.discordapp.com/avatars/365350852967399454/ce6e6e91fa887aa86e23ef356c9878fe',
     description: 'Statistics about your BOT.',

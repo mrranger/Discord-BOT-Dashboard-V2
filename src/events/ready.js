@@ -6,9 +6,9 @@ const figlet = require('figlet');
 const lolcatjs = require('lolcatjs');
 
 module.exports = (client) => {
-    console.clear();
+    // console.clear();  // Removing event loading information and commands
 
-    // Создание баннера
+    // Creating a banner
     const banner = figlet.textSync('Discord BOT Dashboard V2', {
         font: 'Small',
         horizontalLayout: 'default',
@@ -17,13 +17,13 @@ module.exports = (client) => {
     });
     lolcatjs.fromString(banner);
 
-    // Логирование информации о запуске
+    // Logging startup information
     console.log(chalk.bold.green('Launched Successfully...'));
     console.log(chalk.magenta('Version:'), chalk.cyan(`${vers.ver}`));
     console.log(chalk.magenta('Made by:'), chalk.cyan('LachlanDev#8014'));
     console.log(chalk.magenta('Prefix:'), chalk.cyan(`${config.prefix}\n`));
 
-    // Проверка, что клиент и user определены
+    // Check that client and user are defined
     if (client.user) {
         console.log(chalk.green(chalk.bold(`${client.user.username}`), `is online!`));
     } else {
